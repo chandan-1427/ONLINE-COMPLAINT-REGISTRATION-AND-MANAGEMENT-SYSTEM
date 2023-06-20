@@ -278,7 +278,13 @@ app.put("/complaint/:complaintId", async (req, res) => {
       { new: true }
     );
 
-    if (!updatedComplaint) {
+    const assigned = await AssignedComplaint.findOneAndUpdate(
+      {complaintId: complaintId},
+      { status },
+      { new: true }
+    );
+
+    if (!updatedComplaint && !assigned) {
       return res.status(404).json({ error: "Complaint not found" });
     }
     res.json(updatedComplaint);
