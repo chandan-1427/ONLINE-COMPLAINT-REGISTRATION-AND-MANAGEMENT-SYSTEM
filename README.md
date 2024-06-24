@@ -1,1 +1,1 @@
-# complaint-registery
+# complaint-registry
