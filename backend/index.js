@@ -235,7 +235,6 @@ app.get("/allcomplaints/:agentId", async (req, res) => {
         comment: complaintDetail.comment,
       };
     });
-
     res.json(updatedComplaints);
   } catch (error) {
     console.log(error);

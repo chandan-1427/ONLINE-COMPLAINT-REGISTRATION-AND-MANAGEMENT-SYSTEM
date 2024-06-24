@@ -12,8 +12,8 @@ const Status = () => {
   const [statusCompliants, setStatusCompliants] = useState([]);
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
+    
     const { _id } = user;
-
     axios.get(`http://localhost:8000/status/${_id}`)
       .then((res) => {
         setStatusCompliants(res.data);
@@ -47,15 +47,15 @@ const Status = () => {
                   <Card.Text>Pincode: {complaint.pincode}</Card.Text>
                   <Card.Text>Comment: {complaint.comment}</Card.Text>
                   <Card.Text>Status: {complaint.status}</Card.Text>
-                  <Button onClick={() => handleToggle(complaint._id)}
+                  <Button className='mb-2' style={{float: 'right'}} onClick={() => handleToggle(complaint._id)}
                     aria-controls={`collapse-${complaint._id}`}
                     aria-expanded={open} variant="primary">
                     Message
                   </Button>
-                  <div style={{ minHeight: '100%' }}>
+                  <div style={{ minHeight: '100%'}}>
                     <Collapse in={open} dimension="width">
                       <div id="example-collapse-text">
-                        <Card body style={{ width: '250px', marginTop: '12px' }}>
+                        <Card body style={{ width: '260px', marginTop: '12px' }}>
                           <ChatWindow key={complaint.complaintId} complaintId={complaint._id} name={complaint.name} />
                         </Card>
                       </div>

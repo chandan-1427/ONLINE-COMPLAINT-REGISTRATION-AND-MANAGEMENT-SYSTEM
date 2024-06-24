@@ -88,19 +88,19 @@ const SignUp = () => {
                                     <input type="name" name="name" value={user.name} onChange={handleChange} className="form-control form-control-lg" required />
                                     <label className="form-label" htmlFor="name">Full Name</label>
                                  </div>
-                                 <div className="form-outline form-white mb-2">
+                                 <div className="form-outline form-white mb-4">
                                     <input type="email" name="email" value={user.email} onChange={handleChange} className="form-control form-control-lg" required />
                                     <label className="form-label" htmlFor="email">Email</label>
                                  </div>
-                                 <div className="form-outline form-white mb-2">
+                                 <div className="form-outline form-white mb-4">
                                     <input type="password" name="password" value={user.password} onChange={handleChange} className="form-control form-control-lg" required />
                                     <label className="form-label" htmlFor="password">Password</label>
                                  </div>
-                                 <div className="form-outline form-white mb-2">
+                                 <div className="form-outline form-white mb-4">
                                     <input type="phone" name="phone" value={user.phone} onChange={handleChange} className="form-control form-control-lg" required />
                                     <label className="form-label" htmlFor="mobile">Mobile No.</label>
                                  </div>
-                                 <div className="form-outline form-white mb-2">
+                                 <div className="form-outline form-white mb-4">
                                     <Dropdown>
                                        <Dropdown.Toggle variant="secondary" id="dropdown-basic">
                                           {title}

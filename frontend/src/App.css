@@ -157,17 +157,16 @@ span {
 .input-container {
    display: flex;
    align-items: center;
-   padding: 10px;
+   padding: 12px;
 }
 
-.input-container input[type="text"] {
-   width: 20px;
+.input-container textarea {
+   width: 25px;
    flex: 1;
    padding: 5px;
-   margin-right: 10px;
+   margin-right: 5px;
    border: none;
    border-radius: 5px;
-   padding-left: 10px;
    background-color: rgb(250, 247, 247);
 }
 
@@ -176,7 +175,6 @@ span {
    color: white;
    font-size: 12px;
    border: none;
-   cursor: pointer;
    border-radius: 15px;
 }
 

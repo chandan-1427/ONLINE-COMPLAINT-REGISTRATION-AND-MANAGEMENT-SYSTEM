@@ -62,14 +62,6 @@ const Login = () => {
                         Home
                      </Link>
                   </li>
-                  {/* <li className="nav-item mb-2">
-                     <Link
-                        to={'/about'}
-                        className={`nav-link text-light `}
-                     >
-                        About
-                     </Link>
-                  </li> */}
                   <li className="nav-item mb-2">
                      <Link
                      to={'/signup'}

@@ -61,7 +61,8 @@ const ChatWindow = (props) => {
                ))}
             </div>
             <div className="input-container">
-               <input required type="text" placeholder="Message" value={messageInput} onChange={(e) => setMessageInput(e.target.value)} />
+               {/* <input required type="text" placeholder="Message" value={messageInput} onChange={(e) => setMessageInput(e.target.value)} /> */}
+               <textarea required type="text" placeholder="Message" value={messageInput} onChange={(e) => setMessageInput(e.target.value)}></textarea>
                <button className='btn btn-success' onClick={sendMessage}>Send</button>
             </div>
 
