@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import Footer from '../common/FooterC'
+import Footer from '../common/layout/AuthFooter'
 import Complaint from '../user/Complaint';
 import Status from '../user/Status';
 

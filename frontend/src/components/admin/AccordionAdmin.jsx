@@ -3,7 +3,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Alert from 'react-bootstrap/Alert';
-import Footer from '../common/FooterC'
+import Footer from '../common/layout/AuthFooter'
 import axios from 'axios';
 
 const AccordionAdmin = () => {

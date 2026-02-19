@@ -1,0 +1,31 @@
+/* Smooth hover transition */
+.nav-hover {
+  color: #6c757d; /* muted gray */
+  transition: color 0.25s ease;
+}
+
+.nav-hover:hover {
+  color: #000 !important; /* pure black on hover */
+}
+
+/* Button hover */
+.nav-btn-hover {
+  transition: all 0.25s ease;
+}
+
+.nav-btn-hover:hover {
+  background-color: #000 !important;
+  color: #fff !important;
+  border-color: #000 !important;
+}
+
+/* Center items on mobile */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    text-align: center;
+  }
+
+  .navbar-nav {
+    align-items: center !important;
+  }
+}

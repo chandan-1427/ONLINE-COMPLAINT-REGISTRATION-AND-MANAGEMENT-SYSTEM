@@ -1,44 +1,92 @@
 import "./App.css";
-import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+// Public Pages
+import Home from "./components/common/pages/Home";
+import Login from "./components/common/pages/Login";
+import SignUp from "./components/common/pages/SignUp";
+
+// User Pages
 import HomePage from "./components/user/HomePage";
-import Login from "./components/common/Login";
-import SignUp from "./components/common/SignUp";
 import Complaint from "./components/user/Complaint";
 import Status from "./components/user/Status";
-import AdminHome from "./components/admin/AdminHome";
+
+// Admin Pages (New Structure)
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import AdminUsers from "./components/admin/AdminUsers";
+import AdminAgents from "./components/admin/AdminAgents";
+
+// Agent
 import AgentHome from "./components/agent/AgentHome";
-import UserInfo from "./components/admin/UserInfo";
-import Home from "./components/common/Home";
-import AgentInfo from "./components/admin/AgentInfo";
+
+// Protected Route
+import ProtectedRoute from "./components/common/routes/ProtectedRoute";
 
 function App() {
-  const isLoggedIn = !!localStorage.getItem("user");
   return (
-    <div className="App">
-      <Router>
-        <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/SignUp" element={<SignUp />} />
-          {isLoggedIn ? (
-            <>
-              <Route path="/AgentInfo" element={<AgentInfo />} />
-              <Route path="/AgentHome" element={<AgentHome />} />
-              <Route path="/UserInfo" element={<UserInfo />} />
-              <Route path="/AgentHome" element={<AgentHome />} />
-              <Route path="/AdminHome" element={<AdminHome />} />
-              <Route path="/Homepage" element={<HomePage />} />
-              <Route path="/Complaint" element={<Complaint />} />
-              <Route path="/Status" element={<Status />} />
-            </>
-          ) : (
-            <Route to="/Login" />
-          )}
-        </Routes>
-      </Router>
-    </div>
+    <Router>
+      <Routes>
+
+        {/* PUBLIC ROUTES */}
+        <Route path="/" element={<Home />} />
+        <Route path="/signin" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+
+        {/* USER ROUTES */}
+        <Route
+          path="/homepage"
+          element={
+            <ProtectedRoute allowedRole="Ordinary">
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/complaint"
+          element={
+            <ProtectedRoute allowedRole="Ordinary">
+              <Complaint />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/status"
+          element={
+            <ProtectedRoute allowedRole="Ordinary">
+              <Status />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ADMIN ROUTES (Nested) */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRole="Admin">
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="agents" element={<AdminAgents />} />
+        </Route>
+
+        {/* AGENT ROUTES */}
+        <Route
+          path="/agent"
+          element={
+            <ProtectedRoute allowedRole="Agent">
+              <AgentHome />
+            </ProtectedRoute>
+          }
+        />
+
+      </Routes>
+    </Router>
   );
 }
 

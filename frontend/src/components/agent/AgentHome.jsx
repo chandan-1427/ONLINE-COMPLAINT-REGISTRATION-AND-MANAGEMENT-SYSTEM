@@ -1,145 +1,108 @@
 import React, { useState, useEffect } from 'react';
-import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Card from 'react-bootstrap/Card';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Alert from 'react-bootstrap/Alert';
-import Collapse from 'react-bootstrap/Collapse';
-import ChatWindow from '../common/ChatWindow';
-import Footer from '../common/FooterC'
+
+// Import our new sub-components
+import AgentNavbar from './AgentNavbar';
+import ComplaintCard from './ComplaintCard';
+import Footer from '../common/layout/AuthFooter'; // Adjust path
 
 const AgentHome = () => {
-   const style = {
-      marginTop: '66px',
-   }
-
    const navigate = useNavigate();
-   const [userName, setUserName] = useState('');
-   const [toggle, setToggle] = useState({})
-   const [agentComplaintList, setAgentComplaintList] = useState([]);
+   const [user, setUser] = useState(null);
+   const [complaints, setComplaints] = useState([]);
+   const [loading, setLoading] = useState(true);
 
+   // 1. Fetch Data on Mount
    useEffect(() => {
-      const getData = async () => {
+      const initPage = async () => {
          try {
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user) {
-               const { _id, name } = user;
-               setUserName(name);
-               const response = await axios.get(`http://localhost:8000/allcomplaints/${_id}`);
-               const complaints = response.data;
-               setAgentComplaintList(complaints);
-            } else {
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            
+            if (!storedUser) {
                navigate('/');
+               return;
             }
+
+            setUser(storedUser);
+            
+            // Fetch complaints
+            const response = await axios.get(`http://localhost:8000/allcomplaints/${storedUser._id}`);
+            setComplaints(response.data);
          } catch (error) {
-            console.log(error);
+            console.error("Failed to load agent data", error);
+         } finally {
+            setLoading(false);
          }
       };
 
-      getData();
+      initPage();
    }, [navigate]);
 
-   const handleStatusChange = async (complaintId) => {
-      try {
-         await axios.put(`http://localhost:8000/complaint/${complaintId}`, { status: 'completed' });
-         setAgentComplaintList((prevComplaints) =>
-            prevComplaints.map((complaint) =>
-               complaint._doc.complaintId === complaintId ? { ...complaint, _doc: { ...complaint._doc, status: 'completed' } } : complaint
-            )
-         );
-      } catch (error) {
-         console.log(error);
-      }
-   };
-
-   const handleToggle = (complaintId) => {
-      setToggle((prevState) => ({
-         ...prevState,
-         [complaintId]: !prevState[complaintId],
-      }));
-   };
-
-   const LogOut = () => {
+   // 2. Handle Logout
+   const handleLogout = () => {
       localStorage.removeItem('user');
       navigate('/');
    };
 
-   return (
-      <>
-         <div className="body">
-            <Navbar className="text-white" bg="dark" expand="lg">
-               <Container fluid>
-                  <Navbar.Brand className="text-white">
-                     Hi Agent {userName}
-                  </Navbar.Brand>
-                  <Navbar.Toggle aria-controls="navbarScroll" />
-                  <Navbar.Collapse id="navbarScroll">
-                     <Nav className="text-white me-auto my-2 my-lg-0" style={{ maxHeight: '100px' }} navbarScroll>
-                        <NavLink style={{ textDecoration: 'none' }} className="text-white">
-                           View Complaints
-                        </NavLink>
-                     </Nav>
-                     <Button onClick={LogOut} variant="outline-danger">
-                        Log out
-                     </Button>
-                  </Navbar.Collapse>
-               </Container>
-            </Navbar>
-            <div className="container" style={{ display: 'flex', flexWrap: 'wrap', margin: '20px' }}>
-               {agentComplaintList && agentComplaintList.length > 0 ? (
-                  agentComplaintList.map((complaint, index) => {
-                     const open = toggle[complaint._doc.complaintId] || false;
-                     return (
-                        <Card key={index} style={{ width: '18rem', margin: '15px' }}>
-                           <Card.Body>
-                              <Card.Title><b>Name:</b> {complaint.name}</Card.Title>
-                              <Card.Text><b>Address:</b> {complaint.address}</Card.Text>
-                              <Card.Text><b>City:</b> {complaint.city}</Card.Text>
-                              <Card.Text><b>State:</b> {complaint.state}</Card.Text>
-                              <Card.Text><b>Pincode:</b> {complaint.pincode}</Card.Text>
-                              <Card.Text><b>Comment:</b> {complaint.comment}</Card.Text>
-                              <Card.Text><b>Status:</b> {complaint._doc.status}</Card.Text>
+   // 3. Helper to update a single item in the list without re-fetching everything
+   const updateComplaintLocally = (id, newStatus) => {
+      setComplaints(prevList => 
+         prevList.map(item => {
+            // Check nested _doc structure based on your data
+            if (item._doc && item._doc.complaintId === id) {
+               return { ...item, _doc: { ...item._doc, status: newStatus } };
+            }
+            return item;
+         })
+      );
+   };
 
-                              {complaint.status !== 'completed' && (
-                                 <Button onClick={() => handleStatusChange(complaint._doc.complaintId)} variant="primary">
-                                    Status Change
-                                 </Button>
-                              )}
-                              <Button onClick={() => handleToggle(complaint._doc.complaintId)}
-                                 aria-controls={`collapse-${complaint._doc.complaintId}`}
-                                 aria-expanded={!open} className='mx-3' variant="primary">
-                                 Message
-                              </Button>
-                              <div>
-                                 <Collapse in={!open} dimension="width">
-                                    <div id="example-collapse-text">
-                                       <Card body style={{ width: '250px', marginTop: '12px' }}>
-                                          <ChatWindow key={complaint._doc.complaintId} complaintId={complaint._doc.complaintId} name={userName} />
-                                       </Card>
-                                    </div>
-                                 </Collapse>
-                              </div>
-
-                           </Card.Body>
-                        </Card>
-                     );
-                  })
-               ) : (
-                  <Alert variant="info">
-                     <Alert.Heading>No complaints to show</Alert.Heading>
-                  </Alert>
-               )}
-            </div>
+   if (loading) {
+      return (
+         <div className="d-flex justify-content-center align-items-center vh-100">
+            <Spinner animation="border" variant="primary" />
          </div>
-         <Footer style={style}/>
-      </>
+      );
+   }
+
+   return (
+      <div className="d-flex flex-column min-vh-100 bg-light">
+         {/* Navbar Component */}
+         <AgentNavbar 
+            userName={user?.name} 
+            onLogout={handleLogout} 
+         />
+
+         {/* Main Content Area */}
+         <Container className="flex-grow-1 py-5">
+            <Row className="g-4">
+               {complaints && complaints.length > 0 ? (
+                  complaints.map((complaint) => (
+                     <Col key={complaint._doc?.complaintId || Math.random()} xs={12} md={6} lg={4}>
+                        <ComplaintCard 
+                           data={complaint} 
+                           agentName={user?.name}
+                           onStatusUpdate={updateComplaintLocally}
+                        />
+                     </Col>
+                  ))
+               ) : (
+                  <Col xs={12}>
+                     <Alert variant="info" className="text-center">
+                        <Alert.Heading>All Caught Up!</Alert.Heading>
+                        <p>You have no active complaints assigned to you right now.</p>
+                     </Alert>
+                  </Col>
+               )}
+            </Row>
+         </Container>
+
+         {/* Footer Component */}
+         <Footer />
+      </div>
    );
 };
 
 export default AgentHome;
-
-
-

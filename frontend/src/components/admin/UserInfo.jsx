@@ -6,7 +6,7 @@ import Alert from 'react-bootstrap/Alert';
 import { Container } from 'react-bootstrap';
 import Collapse from 'react-bootstrap/Collapse';
 import Form from 'react-bootstrap/Form';
-import Footer from '../common/FooterC'
+import Footer from '../common/layout/AuthFooter'
 
 import axios from 'axios';
 

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
 import { Button } from 'react-bootstrap';
-import ChatWindow from '../common/ChatWindow';
+import ChatWindow from '../common/common/ChatWindow';
 import Collapse from 'react-bootstrap/Collapse';
 
 const Status = () => {
