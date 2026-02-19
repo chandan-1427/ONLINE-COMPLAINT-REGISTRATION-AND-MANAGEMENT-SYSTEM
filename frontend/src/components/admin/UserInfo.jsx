@@ -1,148 +1,291 @@
-import React, { useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import { useNavigate } from 'react-router-dom';
-import Table from 'react-bootstrap/Table';
-import Alert from 'react-bootstrap/Alert';
-import { Container } from 'react-bootstrap';
-import Collapse from 'react-bootstrap/Collapse';
-import Form from 'react-bootstrap/Form';
-import Footer from '../common/layout/AuthFooter'
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import {
+  Container,
+  Table,
+  Button,
+  Modal,
+  Form,
+  Spinner,
+  Badge,
+  Alert,
+  InputGroup,
+  Card
+} from "react-bootstrap";
+import { FaSearch, FaUser, FaEdit, FaTrashAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+import axios from "axios";
 
-import axios from 'axios';
+const API = "http://localhost:8000";
 
 const UserInfo = () => {
-   const navigate = useNavigate();
-   const [ordinaryList, setOrdinaryList] = useState([]);
-   const [toggle, setToggle] = useState({})
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [search, setSearch] = useState("");
+  const [showEdit, setShowEdit] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [editData, setEditData] = useState({ name: "", email: "", phone: "" });
 
-   // const [count, setCount] = useState(0)
+  const fetchUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const res = await axios.get(`${API}/OrdinaryUsers`);
+      setUsers(res.data || []);
+    } catch (err) {
+      setError("Unable to sync user data.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-   const [updateUser, setUpdateUser] = useState({
-      name: '',
-      email: '',
-      phone: '',
-   })
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
-   const handleChange = (e) => {
-      setUpdateUser({ ...updateUser, [e.target.name]: e.target.value })
-   }
+  useEffect(() => {
+    if (!success && !error) return;
+    const timer = setTimeout(() => {
+      setSuccess("");
+      setError("");
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [success, error]);
 
-   const handleSubmit = async (user_id) => {
-      if (updateUser === "") {
-         alert("atleast 1 fields need to be fill")
-      }
-      else {
-         window.confirm("Are you sure you want to Update the user?");
-         axios.put(`http://localhost:8000/user/${user_id}`, updateUser)
-            .then((res) => {
-               alert(`user updated successfully`)
-               JSON.stringify(res.data)
-            })
-            .catch((err) => {
-               console.log(err)
-            })
-      }
-   }
+  const filteredUsers = useMemo(() => {
+    return users.filter(u =>
+      u.name?.toLowerCase().includes(search.toLowerCase()) ||
+      u.email?.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [users, search]);
 
-   useEffect(() => {
-      const getOrdinaryRecords = async () => {
-         try {
-            const response = await axios.get('http://localhost:8000/OrdinaryUsers');
-            const ordinary = response.data;
-            setOrdinaryList(ordinary)
-         } catch (error) {
-            console.log(error);
-         }
-      };
-      getOrdinaryRecords();
-   }, [navigate]);
+  const openEditModal = (user) => {
+    setSelectedUser(user);
+    setEditData({
+      name: user.name || "",
+      email: user.email || "",
+      phone: user.phone || ""
+    });
+    setShowEdit(true);
+  };
 
-   const deleteUser = async (userId) => {
-      try {
-         const confirmed = window.confirm("Are you sure you want to delete the user?");
-         if (confirmed) {
-            await axios.delete(`http://localhost:8000/OrdinaryUsers/${userId}`);
-            setOrdinaryList(ordinaryList.filter((user) => user._id !== userId));
-         }
-      } catch (error) {
-         console.log(error);
-      }
-   }
+  const handleEditChange = (e) => {
+    setEditData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-   const handleToggle = (complaintId) => {
-      setToggle((prevState) => ({
-         ...prevState,
-         [complaintId]: !prevState[complaintId],
-      }));
-   };
+  const handleUpdate = async () => {
+    if (!selectedUser) return;
+    try {
+      setProcessing(true);
+      await axios.put(`${API}/user/${selectedUser._id}`, editData);
+      setUsers(prev => prev.map(u => u._id === selectedUser._id ? { ...u, ...editData } : u));
+      setSuccess("User profile updated.");
+      setShowEdit(false);
+    } catch {
+      setError("Failed to update user.");
+    } finally {
+      setProcessing(false);
+    }
+  };
 
-   return (
-      <>
-         <div className="body">
+  const openDeleteModal = (user) => {
+    setSelectedUser(user);
+    setShowDelete(true);
+  };
 
-            <Container>
-               <Table striped bordered hover>
-                  <thead>
-                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Action</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     {ordinaryList.length > 0 ? (
-                        ordinaryList.map((user) => {
-                           const open = toggle[user._id] || false;
+  const handleDelete = async () => {
+    if (!selectedUser) return;
+    try {
+      setProcessing(true);
+      await axios.delete(`${API}/OrdinaryUsers/${selectedUser._id}`);
+      setUsers(prev => prev.filter(u => u._id !== selectedUser._id));
+      setSuccess("User removed successfully.");
+      setShowDelete(false);
+    } catch {
+      setError("Could not remove user.");
+    } finally {
+      setProcessing(false);
+    }
+  };
 
-                           return (
-                              <tr key={user._id}>
-                                 <td>{user.name}</td>
-                                 <td>{user.email}</td>
-                                 <td>{user.phone}</td>
-                                 <td><Button onClick={() => handleToggle(user._id)}
-                                    aria-controls={`collapse-${user._id}`}
-                                    aria-expanded={open}
-                                    className='mx-2'
-                                    variant="outline-warning">
-                                    Update
-                                 </Button>
-                                    <Collapse in={open}>
-                                       <Form onSubmit={() => handleSubmit(user._id)} className='p-5'>
-                                          <Form.Group className="mb-3" controlId="formBasic">
-                                             <Form.Label>Full Name </Form.Label>
-                                             <Form.Control name='name' value={updateUser.name} onChange={handleChange} type="text" placeholder="Enter name" />
-                                          </Form.Group>
-                                          <Form.Group className="mb-3" controlId="formBasicEmail">
-                                             <Form.Label>Email address</Form.Label>
-                                             <Form.Control name='email' value={updateUser.email} onChange={handleChange} type="email" placeholder="Enter email" />
-                                          </Form.Group>
+  if (loading) {
+    return (
+      <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-white">
+        <Spinner animation="grow" variant="primary" size="sm" className="mb-3" />
+        <span className="text-muted small fw-bold text-uppercase tracking-wider">Syncing Users...</span>
+      </div>
+    );
+  }
 
-                                          <Form.Group className="mb-3" controlId="formBasicTel">
-                                             <Form.Label>Phone</Form.Label>
-                                             <Form.Control name='phone' value={updateUser.phone} onChange={handleChange} type="tel" placeholder="Enter Phone no." />
-                                          </Form.Group>
+  return (
+    <Container fluid className="py-3 bg-light min-vh-100">
+      <style>{`
+        .user-card { 
+          background: #fff; 
+          border: none; 
+          border-radius: 12px; 
+          padding: 16px; 
+          margin-bottom: 12px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .user-desktop-view { display: block; }
+        .user-mobile-view { display: none; }
+        @media (max-width: 768px) {
+          .user-desktop-view { display: none; }
+          .user-mobile-view { display: block; }
+          .user-actions-mobile { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid #f8f9fa; padding-top: 12px; }
+          .user-actions-mobile button { flex: 1; }
+        }
+      `}</style>
 
-                                          <Button size='sm' variant="outline-success" type="submit">
-                                             Submit
-                                          </Button>
-                                       </Form>
-                                    </Collapse>
-                                    <Button onClick={() => deleteUser(user._id)} className='mx-2' variant="outline-danger">Delete</Button></td>
-                              </tr>
-                           )
-                        })
-                     ) : (
-                        <Alert variant="info">
-                           <Alert.Heading>No Users to show</Alert.Heading>
-                        </Alert>
-                     )}
-                  </tbody>
-               </Table>
-            </Container>
-         </div>
-            <Footer />
-      </>
-   )
-}
-export default UserInfo
+      <div className="d-flex justify-content-between align-items-center mb-4 px-1">
+        <div>
+          <h5 className="fw-bold mb-0">User Management</h5>
+          <small className="text-muted">Manage ordinary customer accounts</small>
+        </div>
+        <Badge bg="primary" className="px-3 py-2 rounded-pill shadow-sm">
+          {users.length} Total
+        </Badge>
+      </div>
+
+      {error && <Alert variant="danger" className="small py-2 border-0 shadow-sm mb-3">{error}</Alert>}
+      {success && <Alert variant="success" className="small py-2 border-0 shadow-sm mb-3">{success}</Alert>}
+
+      <Card className="border-0 shadow-sm mb-4 rounded-3">
+        <Card.Body className="p-2">
+          <InputGroup size="sm">
+            <InputGroup.Text className="bg-white border-end-0 text-muted ps-3">
+              <FaSearch size={14} />
+            </InputGroup.Text>
+            <Form.Control
+              placeholder="Search users..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="border-start-0 shadow-none py-2"
+            />
+          </InputGroup>
+        </Card.Body>
+      </Card>
+
+      <div className="user-desktop-view">
+        <Card className="border-0 shadow-sm rounded-4 overflow-hidden">
+          <Table hover className="mb-0 align-middle">
+            <thead className="bg-light border-bottom">
+              <tr className="text-muted small text-uppercase fw-bold">
+                <th className="ps-4 py-3">User Name</th>
+                <th>Contact Info</th>
+                <th>Status</th>
+                <th className="text-end pe-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map(user => (
+                <tr key={user._id}>
+                  <td className="ps-4 py-3 fw-bold text-dark">
+                    <FaUser className="text-primary me-2" size={14} />
+                    {user.name}
+                  </td>
+                  <td className="text-muted small">
+                    <div>{user.email}</div>
+                    <div className="smaller">{user.phone}</div>
+                  </td>
+                  <td>
+                    <Badge bg="secondary" pill className="px-3">
+                      Ordinary
+                    </Badge>
+                  </td>
+                  <td className="text-end pe-4">
+                    <Button variant="light" size="sm" className="border rounded-pill px-3 me-2 fw-medium text-secondary" onClick={() => openEditModal(user)}>
+                      <FaEdit className="me-1" /> Edit
+                    </Button>
+                    <Button variant="outline-danger" size="sm" className="rounded-pill px-3 fw-medium" onClick={() => openDeleteModal(user)}>
+                      <FaTrashAlt className="me-1" /> Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Card>
+      </div>
+
+      <div className="user-mobile-view">
+        {filteredUsers.map(user => (
+          <div key={user._id} className="user-card">
+            <div className="d-flex justify-content-between align-items-start mb-3">
+              <div className="d-flex align-items-center">
+                <div className="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
+                  <FaUser className="text-primary" size={18} />
+                </div>
+                <div>
+                  <div className="fw-bold text-dark">{user.name}</div>
+                  <Badge bg="secondary" pill className="smaller">ORDINARY</Badge>
+                </div>
+              </div>
+            </div>
+            <div className="small text-muted mb-2 d-flex align-items-center">
+              <FaEnvelope className="me-2" size={12} /> {user.email}
+            </div>
+            <div className="small text-muted d-flex align-items-center">
+              <FaPhoneAlt className="me-2" size={12} /> {user.phone}
+            </div>
+            <div className="user-actions-mobile">
+              <Button variant="light" size="sm" className="border fw-bold" onClick={() => openEditModal(user)}>
+                <FaEdit className="me-2" /> Edit
+              </Button>
+              <Button variant="outline-danger" size="sm" className="fw-bold" onClick={() => openDeleteModal(user)}>
+                <FaTrashAlt className="me-2" /> Delete
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Modal show={showEdit} onHide={() => !processing && setShowEdit(false)} centered>
+        <Modal.Header closeButton className="border-0 pb-0">
+          <Modal.Title className="fw-bold fs-5">Edit User Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-4">
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-bold text-secondary">Full Name</Form.Label>
+              <Form.Control name="name" value={editData.name} onChange={handleEditChange} className="bg-light border-0" />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-bold text-secondary">Email Address</Form.Label>
+              <Form.Control type="email" name="email" value={editData.email} onChange={handleEditChange} className="bg-light border-0" />
+            </Form.Group>
+            <Form.Group className="mb-4">
+              <Form.Label className="small fw-bold text-secondary">Phone Number</Form.Label>
+              <Form.Control name="phone" value={editData.phone} onChange={handleEditChange} className="bg-light border-0" />
+            </Form.Group>
+            <div className="d-flex gap-2">
+              <Button variant="light" className="w-100 fw-bold" onClick={() => setShowEdit(false)} disabled={processing}>Cancel</Button>
+              <Button variant="primary" className="w-100 fw-bold" onClick={handleUpdate} disabled={processing}>
+                {processing ? <Spinner size="sm" /> : "Save Changes"}
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showDelete} onHide={() => !processing && setShowDelete(false)} centered size="sm">
+        <Modal.Body className="text-center p-4">
+          <div className="text-danger mb-3"><FaTrashAlt size={32} /></div>
+          <h6 className="fw-bold">Confirm Deletion</h6>
+          <p className="small text-muted mb-4">Remove <strong>{selectedUser?.name}</strong> from the system?</p>
+          <div className="d-grid gap-2">
+            <Button variant="danger" size="sm" className="fw-bold" onClick={handleDelete} disabled={processing}>
+              {processing ? <Spinner size="sm" /> : "Delete User"}
+            </Button>
+            <Button variant="link" size="sm" className="text-muted text-decoration-none" onClick={() => setShowDelete(false)} disabled={processing}>Cancel</Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+    </Container>
+  );
+};
+
+export default UserInfo;

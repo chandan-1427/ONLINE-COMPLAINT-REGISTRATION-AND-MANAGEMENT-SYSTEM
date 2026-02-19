@@ -16,8 +16,8 @@ import Status from "./components/user/Status";
 // Admin Pages (New Structure)
 import AdminLayout from "./components/admin/AdminLayout";
 import AdminDashboard from "./components/admin/AdminDashboard";
-import AdminUsers from "./components/admin/AdminUsers";
-import AdminAgents from "./components/admin/AdminAgents";
+import AdminUsers from "./components/admin/UserInfo";
+import AdminAgents from "./components/admin/AgentInfo";
 
 // Agent
 import AgentHome from "./components/agent/AgentHome";

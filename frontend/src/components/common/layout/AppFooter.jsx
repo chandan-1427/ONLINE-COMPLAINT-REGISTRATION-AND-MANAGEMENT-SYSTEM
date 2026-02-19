@@ -3,45 +3,90 @@ import { Link } from "react-router-dom";
 
 const AppFooter = () => {
   return (
-    <footer className="bg-dark text-light mt-auto py-4">
-      <Container>
-        <Row className="align-items-center text-center text-md-start">
+    <>
+      <footer className="site-footer mt-auto border-top">
+        <Container>
+          <Row className="gy-4 py-4 align-items-center">
+            
+            {/* 1. Brand Section */}
+            <Col xs={12} md={4} className="text-center text-md-start">
+              <div className="footer-brand mb-1">
+                Complaint<span className="text-primary">Care</span>
+              </div>
+              <p className="text-muted smaller mb-0">
+                Turning complaints into customer trust.
+              </p>
+            </Col>
 
-          {/* Brand */}
-          <Col md={4} className="mb-3 mb-md-0">
-            <h5 className="fw-bold mb-1">
-              Complaint<span className="text-primary">Care</span>
-            </h5>
-            <small className="text-secondary">
-              Turning complaints into customer trust.
-            </small>
-          </Col>
+            {/* 2. Quick Links (Center) */}
+            <Col xs={12} md={4} className="text-center">
+              <div className="d-flex justify-content-center gap-4">
+                <Link to="/" className="footer-nav-link">Home</Link>
+                <Link to="/signup" className="footer-nav-link">SignUp</Link>
+                <Link to="/signin" className="footer-nav-link">SignIn</Link>
+              </div>
+            </Col>
 
-          {/* Quick Links */}
-          <Col md={4} className="mb-3 mb-md-0">
-            <div className="d-flex justify-content-center">
-              <Link to="/" className="text-light text-decoration-none mx-3">
-                Home
-              </Link>
-              <Link to="/signup" className="text-light text-decoration-none mx-3">
-                SignUp
-              </Link>
-              <Link to="/signin" className="text-light text-decoration-none mx-3">
-                SignIn
-              </Link>
-            </div>
-          </Col>
+            {/* 3. Copyright (End) */}
+            <Col xs={12} md={4} className="text-center text-md-end">
+              <span className="text-muted smaller">
+                © {new Date().getFullYear()} ComplaintCare Inc. All rights reserved.
+              </span>
+            </Col>
 
-          {/* Copyright */}
-          <Col md={4} className="text-md-end">
-            <small className="text-secondary">
-              © {new Date().getFullYear()} ComplaintCare. All rights reserved.
-            </small>
-          </Col>
+          </Row>
+        </Container>
+      </footer>
 
-        </Row>
-      </Container>
-    </footer>
+      <style>
+        {`
+          .site-footer {
+            background: #ffffff;
+            border-top: 1px solid #f1f3f5 !important;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+          }
+
+          .footer-brand {
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.02em;
+            color: #1a1a1a;
+          }
+
+          .footer-nav-link {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.2s ease;
+          }
+
+          .footer-nav-link:hover {
+            color: #0d6efd;
+          }
+
+          .smaller {
+            font-size: 0.75rem;
+            letter-spacing: 0.01em;
+          }
+
+          .hover-link:hover {
+            color: #0d6efd !important;
+          }
+
+          .footer-bottom {
+            border-color: #f8f9fa !important;
+          }
+            
+          /* Ensures footer sticks to bottom if page content is short */
+          #root {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+          }
+        `}
+      </style>
+    </>
   );
 };
 
