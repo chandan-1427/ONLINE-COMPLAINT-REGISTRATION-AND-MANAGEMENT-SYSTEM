@@ -1,102 +1,141 @@
-import axios from 'axios'
-import React, { useState } from 'react'
+import { Card, Form, Row, Col, Button, Spinner } from "react-bootstrap";
+import { FaPaperPlane, FaUser, FaMapMarkerAlt, FaPenNib, FaFileAlt } from "react-icons/fa";
+import { useComplaintForm } from "./hooks/useComplaintForm";
+
+// Import CSS Module
+import styles from "./css/Complaint.module.css";
 
 const Complaint = () => {
-   const user = JSON.parse(localStorage.getItem('user'))
-   const [userComplaint, setUserComplaint] = useState({
-      userId: user._id,
-      name: '',
-      address: '',
-      city: '',
-      state: '',
-      pincode: '',
-      status: '',
-      comment: ''
-   })
+  const user = JSON.parse(localStorage.getItem("user"));
+  const { formData, handleChange, handleSubmit, loading } = useComplaintForm(user?._id);
 
-   const handleChange = (e) => {
-      const { name, value } = e.target
-      setUserComplaint({ ...userComplaint, [name]: value })
-   }
+  return (
+    <Card className={styles.letterCard}>
+      <Card.Body className="p-4 p-lg-5">
+        
+        {/* Official Letterhead Heading */}
+        <div className={`${styles.letterHeader} d-flex justify-content-between align-items-center`}>
+           <div>
+              <h3 className="fw-bold mb-0" style={{ fontFamily: 'serif' }}>OFFICIAL COMPLAINT</h3>
+              <small className="text-muted">FORM REF: #USR-{user?._id?.slice(-5).toUpperCase()}</small>
+           </div>
+           <FaFileAlt size={30} className="text-muted opacity-50" />
+        </div>
 
-   const handleClear = () => {
-      setUserComplaint({
-         userId: '',
-         name: '',
-         address: '',
-         city: '',
-         state: '',
-         pincode: '',
-         status: '',
-         comment: ''
-      })
-   }
+        <Form onSubmit={handleSubmit}>
+          <Row className="g-4">
+            {/* Left Side: Metadata */}
+            <Col lg={5}>
+              <div className={styles.letterSectionTitle}>
+                 <FaUser size={12}/> <small>Identification</small>
+              </div>
+              
+              <Form.Group className="mb-4">
+                <label className={styles.formalLabel}>Full Name of Requester</label>
+                <Form.Control
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="E.g. John Doe"
+                  className={`${styles.formalInput} shadow-none`}
+                  required
+                />
+              </Form.Group>
 
-   const handleSubmit = async (e) => {
-      e.preventDefault()
-      const user = JSON.parse(localStorage.getItem('user'))
-      const { _id } = user
-      axios.post(`http://localhost:8000/Complaint/${_id}`, userComplaint)
-         .then(res => {
-            JSON.stringify(res.data.userComplaint)
-            alert("Your Complaint has been send!!")
-            handleClear()
-         })
-         .catch(err => {
-            console.log(err)
-            alert("Something went wrong!!")
-         })
-   }
-   return (
-      <>
-         <div className="text-white complaint-box">
-            <form onSubmit={handleSubmit} className="compliant-form row bg-dark ">
+              <div className={`${styles.letterSectionTitle} mt-5`}>
+                 <FaMapMarkerAlt size={12}/> <small>Service Location</small>
+              </div>
 
-               <div className="col-md-6 p-3 p-3">
-                  <label htmlFor="name" className="form-label">Name</label>
-                  <input name="name" onChange={handleChange} value={userComplaint.name} type="text" className="form-control" id="name" required />
-               </div>
-               <div className="col-md-6 p-3">
-                  <label htmlFor="address" className="form-label">Address</label>
-                  <input name="address" onChange={handleChange} value={userComplaint.address} type="text" className="form-control" id="address" required />
-               </div>
+              <Form.Group className="mb-3">
+                <label className={styles.formalLabel}>Mailing Address</label>
+                <Form.Control
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Street and House Number"
+                  className={`${styles.formalInput} shadow-none`}
+                  required
+                />
+              </Form.Group>
 
-               <div className="col-md-6 p-3">
-                  <label htmlFor="city" className="form-label">City</label>
-                  <input name="city" onChange={handleChange} value={userComplaint.city} type="text" className="form-control" id="city" required />
-               </div>
-               <div className="col-md-6 p-3">
-                  <label htmlFor="state" className="form-label">State</label>
-                  <input name="state" onChange={handleChange} value={userComplaint.state} type="text" className="form-control" id="state" required />
-               </div>
+              <Row className="g-3">
+                <Col xs={12} sm={6}>
+                  <label className={styles.formalLabel}>City</label>
+                  <Form.Control
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    className={`${styles.formalInput} shadow-none`}
+                    required
+                  />
+                </Col>
+                <Col xs={6} sm={3}>
+                  <label className={styles.formalLabel}>State</label>
+                  <Form.Control
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    className={`${styles.formalInput} shadow-none`}
+                    required
+                  />
+                </Col>
+                <Col xs={6} sm={3}>
+                  <label className={styles.formalLabel}>Zip</label>
+                  <Form.Control
+                    name="pincode"
+                    maxLength={6}
+                    value={formData.pincode}
+                    onChange={handleChange}
+                    className={`${styles.formalInput} shadow-none`}
+                    required
+                  />
+                </Col>
+              </Row>
+            </Col>
 
-               <div className="col-md-6 p-3">
-                  <label htmlFor="pincode" className="form-label">Pincode</label>
-                  <input name="pincode" onChange={handleChange} value={userComplaint.pincode} type="text" className="form-control" id="pincode" required />
-               </div>
-               
-               {/* <div className="col-md-6 p-3">
-                  <label htmlFor="file" className="form-label">Document</label>
-                  <input name="file" type="file" className="form-control" id="file" required />
-               </div> */}
+            {/* Right Side: Statement */}
+            <Col lg={7}>
+              <div className={styles.letterSectionTitle}>
+                 <FaPenNib size={12}/> <small>Statement of Issue</small>
+              </div>
 
-               <div className="col-md-6 p-3">
-                  <label htmlFor="status" className="form-label">Status</label>
-                  <input placeholder='type pending' name="status" onChange={handleChange} value={userComplaint.status} type="text" className="form-control" id="pincode" required />
-               </div>
+              <Form.Group className="h-100 d-flex flex-column">
+                <label className={styles.formalLabel}>Detailed Description</label>
+                <Form.Control
+                  as="textarea"
+                  name="comment"
+                  value={formData.comment}
+                  onChange={handleChange}
+                  placeholder="Type your official statement here..."
+                  className={`${styles.formalTextarea} flex-grow-1 shadow-none`}
+                  style={{ minHeight: "250px", resize: "none" }}
+                  required
+                />
+                
+                <div className={styles.buttonContainer}>
+                  <Button
+                    type="submit"
+                    variant="dark"
+                    className={`${styles.submitFormalBtn} d-inline-flex align-items-center justify-content-center gap-2 shadow-sm`}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <Spinner size="sm" />
+                    ) : (
+                      <>
+                        <FaPaperPlane size={14} />
+                        FILE COMPLAINT
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </Form.Group>
+            </Col>
+          </Row>
+        </Form>
+      </Card.Body>
+    </Card>
+  );
+};
 
-
-               <label className=" p-3form-label text-light" htmlFor="comment">Descrption</label>
-               <div className="form-floating">
-                  <textarea name="comment" onChange={handleChange} value={userComplaint.comment} className="form-control" required></textarea>
-               </div>
-               <div className="text-center p-1 col-12">
-                  <button type="submit" onClick={handleSubmit} className="mt-2 btn btn-success">Register</button>
-               </div>
-            </form>
-         </div>
-      </>
-   )
-}
-
-export default Complaint
+export default Complaint;

@@ -1,0 +1,90 @@
+/* ✉️ The Stamp/Envelope Card */
+.stampCard {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 2px;
+  position: relative;
+  transition: transform 0.2s ease;
+  box-shadow: 3px 3px 0px #e5e7eb;
+}
+
+.stampCard:hover {
+  transform: rotate(-1deg) scale(1.02);
+  border-color: #800020; /* Burgundy accent on hover */
+}
+
+/* Monospace ID (Typewriter look) */
+.typewriterId {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  color: #4b5563;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Postmark Status Stamp - Using Burgundy for "Official" feel */
+.postmarkStatus {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: 2px solid;
+  padding: 2px 8px;
+  font-family: 'Georgia', serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  transform: rotate(15deg);
+  opacity: 0.8;
+  font-size: 0.6rem;
+  border-radius: 4px;
+}
+
+.statusPending { color: #800020; border-color: #800020; }
+.statusCompleted { color: #047857; border-color: #047857; }
+
+.formalText {
+  font-family: 'Georgia', serif;
+  line-height: 1.5;
+}
+
+/* Floating Chat UI - Matches the Letter Theme */
+.floatingChatDialogue {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 360px;
+  height: 520px;
+  background: #fdfbf9; /* Ivory Paper */
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  border-radius: 4px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #333;
+}
+
+.chatDialogueHeader {
+  background: #333; /* Dark Archive Header */
+  color: #fff;
+  padding: 12px;
+  font-family: 'Georgia', serif;
+}
+
+.sectionHeader {
+  margin-bottom: 3rem;
+}
+
+.headerLine {
+  height: 2px;
+  width: 60px;
+  background: #800020;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 400px) {
+  .floatingChatDialogue {
+    width: 90%;
+    right: 5%;
+    left: 5%;
+  }
+}

@@ -1,0 +1,94 @@
+.letterCard { 
+  border-radius: 4px; 
+  background: #fff; 
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+/* Mock Paper Texture / Burgundy Margin Line */
+.letterCard::before {
+  content: "";
+  position: absolute;
+  left: 40px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(128, 0, 32, 0.15); /* Burgundy margin */
+}
+
+.letterHeader {
+  border-bottom: 2px solid #333;
+  padding-bottom: 15px;
+  margin-bottom: 30px;
+}
+
+.formalLabel {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.formalInput {
+  border: none !important;
+  border-bottom: 1px solid #ccc !important;
+  border-radius: 0 !important;
+  padding: 8px 0 !important;
+  background: transparent !important;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.formalInput:focus {
+  border-bottom-color: #800020 !important; /* Burgundy focus */
+  box-shadow: none !important;
+}
+
+.letterSectionTitle {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  color: #777;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.formalTextarea {
+  background: #fdfdfd !important;
+  border: 1px solid #eee !important;
+  border-radius: 4px !important;
+  padding: 15px !important;
+  line-height: 1.6;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
+  width: 100%;
+}
+
+.submitFormalBtn {
+  background: #800020 !important; /* Burgundy primary button */
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 12px 30px !important;
+  font-weight: 600;
+  letter-spacing: 1px;
+  width: auto;
+  max-width: 100%;
+}
+
+.submitFormalBtn:hover {
+  background: #600018 !important;
+}
+
+@media (max-width: 768px) {
+  .letterCard::before { left: 20px; }
+  .submitFormalBtn { width: 100%; }
+}
