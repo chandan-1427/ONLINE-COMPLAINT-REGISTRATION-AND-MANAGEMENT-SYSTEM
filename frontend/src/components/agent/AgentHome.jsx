@@ -1,108 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { Container, Row, Col, Spinner, Button } from 'react-bootstrap';
+import { FaSyncAlt } from 'react-icons/fa';
 
-// Import our new sub-components
 import AgentNavbar from './AgentNavbar';
 import ComplaintCard from './ComplaintCard';
-import Footer from '../common/layout/AuthFooter'; // Adjust path
+import Footer from '../common/layout/AuthFooter';
+
+// Import our custom logic
+import { useAgentDashboard } from './hooks/useAgentDashboard';
 
 const AgentHome = () => {
-   const navigate = useNavigate();
-   const [user, setUser] = useState(null);
-   const [complaints, setComplaints] = useState([]);
-   const [loading, setLoading] = useState(true);
+  const { state, actions } = useAgentDashboard();
 
-   // 1. Fetch Data on Mount
-   useEffect(() => {
-      const initPage = async () => {
-         try {
-            const storedUser = JSON.parse(localStorage.getItem('user'));
-            
-            if (!storedUser) {
-               navigate('/');
-               return;
-            }
-
-            setUser(storedUser);
-            
-            // Fetch complaints
-            const response = await axios.get(`http://localhost:8000/allcomplaints/${storedUser._id}`);
-            setComplaints(response.data);
-         } catch (error) {
-            console.error("Failed to load agent data", error);
-         } finally {
-            setLoading(false);
-         }
-      };
-
-      initPage();
-   }, [navigate]);
-
-   // 2. Handle Logout
-   const handleLogout = () => {
-      localStorage.removeItem('user');
-      navigate('/');
-   };
-
-   // 3. Helper to update a single item in the list without re-fetching everything
-   const updateComplaintLocally = (id, newStatus) => {
-      setComplaints(prevList => 
-         prevList.map(item => {
-            // Check nested _doc structure based on your data
-            if (item._doc && item._doc.complaintId === id) {
-               return { ...item, _doc: { ...item._doc, status: newStatus } };
-            }
-            return item;
-         })
-      );
-   };
-
-   if (loading) {
-      return (
-         <div className="d-flex justify-content-center align-items-center vh-100">
-            <Spinner animation="border" variant="primary" />
-         </div>
-      );
-   }
-
-   return (
-      <div className="d-flex flex-column min-vh-100 bg-light">
-         {/* Navbar Component */}
-         <AgentNavbar 
-            userName={user?.name} 
-            onLogout={handleLogout} 
-         />
-
-         {/* Main Content Area */}
-         <Container className="flex-grow-1 py-5">
-            <Row className="g-4">
-               {complaints && complaints.length > 0 ? (
-                  complaints.map((complaint) => (
-                     <Col key={complaint._doc?.complaintId || Math.random()} xs={12} md={6} lg={4}>
-                        <ComplaintCard 
-                           data={complaint} 
-                           agentName={user?.name}
-                           onStatusUpdate={updateComplaintLocally}
-                        />
-                     </Col>
-                  ))
-               ) : (
-                  <Col xs={12}>
-                     <Alert variant="info" className="text-center">
-                        <Alert.Heading>All Caught Up!</Alert.Heading>
-                        <p>You have no active complaints assigned to you right now.</p>
-                     </Alert>
-                  </Col>
-               )}
-            </Row>
-         </Container>
-
-         {/* Footer Component */}
-         <Footer />
+  if (state.loading) {
+    return (
+      <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-white">
+        <Spinner animation="grow" variant="primary" size="sm" className="mb-3" />
+        <span className="text-muted small fw-bold text-uppercase tracking-wider">
+          Syncing Assigned Tasks...
+        </span>
       </div>
-   );
+    );
+  }
+
+  return (
+    <div className="d-flex flex-column min-vh-100 bg-light">
+      <AgentNavbar 
+        userName={state.user?.name} 
+        onLogout={actions.handleLogout} 
+      />
+
+      <Container fluid className="px-md-5 flex-grow-1 py-4">
+        
+        {/* Page Header Area */}
+        <div className="d-flex justify-content-between align-items-end mb-4 px-2">
+          <div>
+            <h4 className="fw-bold mb-0 text-dark">Assigned Complaints</h4>
+            <p className="text-muted small mb-0">Manage and resolve tickets in your queue</p>
+          </div>
+          
+          <Button 
+            variant="white" 
+            size="sm" 
+            className="shadow-sm border rounded-pill px-3 fw-bold text-secondary d-flex align-items-center gap-2"
+            onClick={() => actions.fetchData(true)}
+            disabled={state.refreshing}
+          >
+            <FaSyncAlt className={state.refreshing ? 'fa-spin' : ''} /> 
+            {state.refreshing ? 'Syncing...' : 'Refresh'}
+          </Button>
+        </div>
+
+        <Row className="g-4">
+          {state.complaints.length > 0 ? (
+            state.complaints.map((complaint) => (
+              <Col 
+                key={complaint._doc?.complaintId || Math.random()} 
+                xs={12} sm={6} lg={4} xl={3}
+              >
+                <ComplaintCard 
+                  data={complaint} 
+                  agentName={state.user?.name}
+                  onStatusUpdate={actions.updateComplaintLocally}
+                />
+              </Col>
+            ))
+          ) : (
+            <Col xs={12}>
+              <div className="text-center py-5 bg-white rounded-4 border shadow-sm mx-2">
+                <div className="mb-3 text-muted display-6 opacity-25">📁</div>
+                <h5 className="fw-bold">No active complaints</h5>
+                <p className="text-muted small">You're all caught up! New tickets will appear here.</p>
+                <Button 
+                   variant="primary" 
+                   size="sm" 
+                   className="rounded-pill px-4 mt-2" 
+                   onClick={() => actions.fetchData(true)}
+                >
+                  Check for Updates
+                </Button>
+              </div>
+            </Col>
+          )}
+        </Row>
+      </Container>
+
+      <Footer />
+    </div>
+  );
 };
 
 export default AgentHome;

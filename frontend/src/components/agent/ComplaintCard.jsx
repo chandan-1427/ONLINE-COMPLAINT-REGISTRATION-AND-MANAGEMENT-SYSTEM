@@ -1,81 +1,108 @@
-import React, { useState } from 'react';
-import { Card, Button, Collapse, Badge } from 'react-bootstrap';
-import axios from 'axios';
-import ChatWindow from '../common/common/ChatWindow'; // Adjust path as needed
+import { Card, Button, Badge, Stack } from 'react-bootstrap';
+import { FaMapMarkerAlt, FaCommentAlt, FaCheck, FaComments, FaTimes } from 'react-icons/fa';
+import ChatWindow from '../common/common/ChatWindow';
+
+// Import local logic and styles
+import { useComplaintActions } from './hooks/useComplaintActions';
+import styles from './css/ComplaintCard.module.css';
 
 const ComplaintCard = ({ data, agentName, onStatusUpdate }) => {
-  // We manage the "Chat Open" state locally here, so the parent doesn't need to track it
-  const [showChat, setShowChat] = useState(false);
-  
-  // Destructure for cleaner access. 
-  // Note: Handling your specific data structure where some fields are in '_doc'
   const complaintDetails = data._doc || {}; 
   const { complaintId, status } = complaintDetails;
-  
-  // Handle Status Change locally, then notify parent to refresh list if needed
-  const handleStatusChange = async () => {
-    try {
-      await axios.put(`http://localhost:8000/complaint/${complaintId}`, { status: 'completed' });
-      // Call the parent function to update the UI state without a full reload
-      if (onStatusUpdate) {
-         onStatusUpdate(complaintId, 'completed');
-      }
-    } catch (error) {
-      console.error("Error updating status:", error);
-    }
-  };
+
+  const { 
+    showChat, 
+    setShowChat, 
+    loading, 
+    chatRef, 
+    handleStatusChange 
+  } = useComplaintActions(complaintId, onStatusUpdate);
 
   return (
-    <Card className="shadow-sm h-100" style={{ width: '100%', maxWidth: '22rem' }}>
-      <Card.Header className="d-flex justify-content-between align-items-center">
-         <span className="fw-bold">#{complaintId}</span>
-         <Badge bg={status === 'completed' ? 'success' : 'warning'}>{status}</Badge>
-      </Card.Header>
-      <Card.Body>
-        <Card.Title className="mb-3">{data.name}</Card.Title>
-        
-        <div className="mb-3 text-secondary" style={{ fontSize: '0.9rem' }}>
-          <p className="mb-1"><strong>City:</strong> {data.city}, {data.state}</p>
-          <p className="mb-1"><strong>Address:</strong> {data.address}</p>
-          <p className="mb-1"><strong>Comment:</strong> {data.comment}</p>
-        </div>
-
-        <div className="d-flex gap-2 flex-wrap">
-          {status !== 'completed' && (
-            <Button 
-               variant="success" 
-               size="sm" 
-               onClick={handleStatusChange}
+    <>
+      <Card className={`${styles.complaintCard} shadow-sm border-0 h-100`}>
+        <Card.Body className="p-3 p-sm-4">
+          <div className={styles.cardHeaderFlex}>
+            <span className={styles.idBadge}>ID #{complaintId}</span>
+            <Badge 
+              bg={status === 'completed' ? 'success' : 'warning'} 
+              className={`${styles.statusBadge} rounded-pill fw-bold bg-opacity-10 text-${status === 'completed' ? 'success' : 'warning'} border`}
             >
-               Mark Completed
-            </Button>
-          )}
-          
-          <Button 
-            variant="outline-primary" 
-            size="sm"
-            onClick={() => setShowChat(!showChat)}
-            aria-controls={`chat-${complaintId}`}
-            aria-expanded={showChat}
-          >
-            {showChat ? 'Close Chat' : 'Open Chat'}
-          </Button>
-        </div>
-
-        {/* Chat Collapse Section */}
-        <Collapse in={showChat}>
-          <div id={`chat-${complaintId}`} className="mt-3">
-             <div className="border rounded p-2 bg-light">
-                {/* Ensure ChatWindow is robust enough to load only when visible if needed */}
-                <ChatWindow 
-                   complaintId={complaintId} 
-                   name={agentName} 
-                />
-             </div>
+              {status}
+            </Badge>
           </div>
-        </Collapse>
-      </Card.Body>
-    </Card>
+
+          <Card.Title className="fw-bold text-dark mb-3" style={{ fontSize: '1.1rem' }}>
+            {data.name}
+          </Card.Title>
+          
+          <div className="details-wrapper mb-4">
+            <div className={styles.detailItem}>
+              <FaMapMarkerAlt className={styles.detailIcon} />
+              <div style={{ minWidth: 0 }}>
+                <div className="text-dark fw-semibold text-truncate">{data.city}, {data.state}</div>
+                <div className="text-muted smaller text-truncate">{data.address}</div>
+              </div>
+            </div>
+
+            <div className={styles.detailItem}>
+              <FaCommentAlt className={styles.detailIcon} />
+              <div className="text-secondary" style={{ fontSize: '0.85rem', lineHeight: '1.4' }}>
+                {data.comment}
+              </div>
+            </div>
+          </div>
+
+          <Stack direction="horizontal" gap={2}>
+            {status !== 'completed' && (
+              <Button 
+                variant="success" 
+                size="sm"
+                className="w-100 fw-bold d-flex align-items-center justify-content-center gap-2"
+                onClick={handleStatusChange}
+                disabled={loading}
+              >
+                <FaCheck size={10} /> Done
+              </Button>
+            )}
+            
+            <Button 
+              variant="outline-primary" 
+              size="sm"
+              className="w-100 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-none"
+              onClick={() => setShowChat(true)}
+            >
+              <FaComments size={14}/> Chat
+            </Button>
+          </Stack>
+        </Card.Body>
+      </Card>
+
+      {/* Floating Chat Dialogue Window */}
+      {showChat && (
+        <div className={styles.floatingChatDialogue} ref={chatRef}>
+          <div className={styles.chatDialogueHeader}>
+            <div className="d-flex align-items-center gap-2">
+              <div className={styles.avatarCircle}>{data.name?.charAt(0)}</div>
+              <div>
+                <div className="fw-bold" style={{ fontSize: '0.9rem', lineHeight: 1 }}>{data.name}</div>
+                <small className="text-muted" style={{ fontSize: '0.7rem' }}>Complaint #{complaintId}</small>
+              </div>
+            </div>
+            <Button variant="link" className="text-muted p-0 shadow-none" onClick={() => setShowChat(false)}>
+              <FaTimes />
+            </Button>
+          </div>
+          
+          <div className="flex-grow-1 overflow-hidden">
+            <ChatWindow 
+              complaintId={complaintId} 
+              name={agentName} 
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

@@ -1,0 +1,104 @@
+.complaintCard {
+  border: 1px solid #eef2f6;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background: #fff;
+  overflow: hidden;
+}
+
+.complaintCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08) !important;
+}
+
+.cardHeaderFlex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.detailItem {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 0.88rem;
+}
+
+.detailIcon {
+  color: #adb5bd;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.idBadge {
+  background: #f1f5f9;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.statusBadge {
+  font-size: 0.65rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 12px !important;
+}
+
+/* Floating Chat Dialogue Window */
+.floatingChatDialogue {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 360px;
+  height: 550px;
+  background: white;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  border-radius: 15px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #efefef;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.chatDialogueHeader {
+  padding: 1rem;
+  border-bottom: 1px solid #efefef;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+}
+
+.avatarCircle {
+  width: 32px;
+  height: 32px;
+  background: #0d6efd;
+  color: white;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 400px) {
+  .floatingChatDialogue {
+    width: 90%;
+    right: 5%;
+    left: 5%;
+    bottom: 10px;
+  }
+}
