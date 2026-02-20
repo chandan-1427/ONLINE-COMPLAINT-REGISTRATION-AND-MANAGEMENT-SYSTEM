@@ -7,8 +7,7 @@ import { useComplaintActions } from './hooks/useComplaintActions';
 import styles from './css/ComplaintCard.module.css';
 
 const ComplaintCard = ({ data, agentName, onStatusUpdate }) => {
-  const complaintDetails = data._doc || {}; 
-  const { complaintId, status } = complaintDetails;
+  const { _id, status } = data;
 
   const { 
     showChat, 
@@ -16,14 +15,14 @@ const ComplaintCard = ({ data, agentName, onStatusUpdate }) => {
     loading, 
     chatRef, 
     handleStatusChange 
-  } = useComplaintActions(complaintId, onStatusUpdate);
+  } = useComplaintActions(_id, onStatusUpdate);
 
   return (
     <>
       <Card className={`${styles.complaintCard} shadow-sm border-0 h-100`}>
         <Card.Body className="p-3 p-sm-4">
           <div className={styles.cardHeaderFlex}>
-            <span className={styles.idBadge}>ID #{complaintId}</span>
+            <span className={styles.idBadge}>ID #{_id.slice(-6)}</span>
             <Badge 
               bg={status === 'completed' ? 'success' : 'warning'} 
               className={`${styles.statusBadge} rounded-pill fw-bold bg-opacity-10 text-${status === 'completed' ? 'success' : 'warning'} border`}
@@ -86,7 +85,7 @@ const ComplaintCard = ({ data, agentName, onStatusUpdate }) => {
               <div className={styles.avatarCircle}>{data.name?.charAt(0)}</div>
               <div>
                 <div className="fw-bold" style={{ fontSize: '0.9rem', lineHeight: 1 }}>{data.name}</div>
-                <small className="text-muted" style={{ fontSize: '0.7rem' }}>Complaint #{complaintId}</small>
+                <small className="text-muted" style={{ fontSize: '0.7rem' }}>Complaint #{_id.slice(-6)}</small>
               </div>
             </div>
             <Button variant="link" className="text-muted p-0 shadow-none" onClick={() => setShowChat(false)}>
@@ -96,7 +95,7 @@ const ComplaintCard = ({ data, agentName, onStatusUpdate }) => {
           
           <div className="flex-grow-1 overflow-hidden">
             <ChatWindow 
-              complaintId={complaintId} 
+              complaintId={_id} 
               name={agentName} 
             />
           </div>

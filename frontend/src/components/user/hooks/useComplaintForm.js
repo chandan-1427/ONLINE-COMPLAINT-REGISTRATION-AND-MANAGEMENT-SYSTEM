@@ -34,12 +34,21 @@ export const useComplaintForm = (userId) => {
 
     setLoading(true);
     try {
-      await userApi.submitComplaint(userId, formData);
-      alert("Complaint registered successfully!");
+      /** * ✅ FIX: Injecting the required 'status' field here.
+       * This ensures your Mongoose Schema validation passes.
+       */
+      const complaintData = {
+        ...formData,
+        status: 'pending' 
+      };
+
+      await userApi.submitComplaint(userId, complaintData);
+      
+      alert("Your Official Complaint has been filed successfully!");
       resetForm();
     } catch (err) {
-      console.error(err);
-      alert("Failed to send complaint. Please try again.");
+      console.error("Backend Validation Error:", err.response?.data || err.message);
+      alert("Something went wrong while submitting the record.");
     } finally {
       setLoading(false);
     }

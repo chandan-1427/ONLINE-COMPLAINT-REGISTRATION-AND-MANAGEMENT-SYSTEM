@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, Form, Row, Col, Button, Spinner } from "react-bootstrap";
 import { FaPaperPlane, FaUser, FaMapMarkerAlt, FaPenNib, FaFileAlt } from "react-icons/fa";
 import { useComplaintForm } from "./hooks/useComplaintForm";
@@ -24,7 +25,6 @@ const Complaint = () => {
 
         <Form onSubmit={handleSubmit}>
           <Row className="g-4">
-            {/* Left Side: Metadata */}
             <Col lg={5}>
               <div className={styles.letterSectionTitle}>
                  <FaUser size={12}/> <small>Identification</small>
@@ -93,7 +93,6 @@ const Complaint = () => {
               </Row>
             </Col>
 
-            {/* Right Side: Statement */}
             <Col lg={7}>
               <div className={styles.letterSectionTitle}>
                  <FaPenNib size={12}/> <small>Statement of Issue</small>

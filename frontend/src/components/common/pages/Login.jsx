@@ -43,7 +43,7 @@ const Login = () => {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:8000/Login",
+        "http://localhost:8000/api/auth/login",
         user
       );
 

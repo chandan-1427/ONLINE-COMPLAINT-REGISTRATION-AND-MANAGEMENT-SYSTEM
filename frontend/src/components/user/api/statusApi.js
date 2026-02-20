@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "http://localhost:8000/api/users";
 
 export const statusApi = {
-  getUserComplaints: (userId) => axios.get(`${API_BASE}/status/${userId}`),
+  getUserComplaints: (userId) =>
+    axios.get(`${API_BASE}/${userId}/complaints`)
 };

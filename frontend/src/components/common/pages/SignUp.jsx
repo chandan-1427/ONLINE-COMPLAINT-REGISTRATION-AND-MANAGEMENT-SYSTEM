@@ -60,7 +60,7 @@ const SignUp = () => {
       setLoading(true);
 
       // 2. API Call
-      await axios.post("http://localhost:8000/SignUp", user);
+      await axios.post("http://localhost:8000/api/auth/signup", user);
 
       // 3. Success Handling
       setSuccess("Account created successfully! Redirecting to login...");

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { FaPaperPlane } from 'react-icons/fa';
 
@@ -9,7 +9,7 @@ const ChatWindow = ({ complaintId, name }) => {
 
    const fetchMessageList = useCallback(async () => {
       try {
-         const response = await axios.get(`http://localhost:8000/messages/${complaintId}`);
+         const response = await axios.get(`http://localhost:8000/api/messages/${complaintId}`);
          setMessageList(response.data);
       } catch (error) {
          console.error('Error fetching messages:', error);
@@ -37,7 +37,7 @@ const ChatWindow = ({ complaintId, name }) => {
             message: messageInput,
             complaintId: complaintId
          };
-         const response = await axios.post('http://localhost:8000/messages', data);
+         const response = await axios.post('http://localhost:8000/api/messages', data);
          setMessageList(prev => [...prev, response.data]);
          setMessageInput('');
       } catch (error) {

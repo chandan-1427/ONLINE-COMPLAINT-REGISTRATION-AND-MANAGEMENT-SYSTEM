@@ -1,8 +1,11 @@
 import axios from 'axios';
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "http://localhost:8000/api/agent";
 
 export const complaintApi = {
-  updateStatus: (id, status) => 
-    axios.put(`${API_BASE}/complaint/${id}`, { status }),
+  updateStatus: (complaintId, status) =>
+    axios.put(
+      `${API_BASE}/complaints/${complaintId}`,
+      { status }
+    ),
 };

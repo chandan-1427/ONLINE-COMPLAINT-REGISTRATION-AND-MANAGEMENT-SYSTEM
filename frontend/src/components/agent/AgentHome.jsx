@@ -54,7 +54,7 @@ const AgentHome = () => {
           {state.complaints.length > 0 ? (
             state.complaints.map((complaint) => (
               <Col 
-                key={complaint._doc?.complaintId || Math.random()} 
+                key={complaint._id}
                 xs={12} sm={6} lg={4} xl={3}
               >
                 <ComplaintCard 
