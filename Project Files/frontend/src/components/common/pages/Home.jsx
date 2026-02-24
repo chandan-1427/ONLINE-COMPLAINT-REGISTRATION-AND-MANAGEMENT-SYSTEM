@@ -30,7 +30,7 @@ const Home = () => {
         }
         description={
           <p className="text-muted fs-6 mb-4" style={{ maxWidth: "520px" }}>
-            ComplaintCare helps teams manage complaints efficiently with
+            ComplaintRegistery helps teams manage complaints efficiently with
             structured workflows, real-time tracking, and clear accountability.
           </p>
         }

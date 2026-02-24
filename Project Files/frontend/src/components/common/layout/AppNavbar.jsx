@@ -18,7 +18,7 @@ const AppNavbar = () => {
           className="fw-semibold text-dark"
           style={{ fontSize: "1.1rem", letterSpacing: "0.3px" }}
         >
-          Complaint<span className="text-primary">Care</span>
+          Complaint<span className="text-primary">Registery</span>
         </Navbar.Brand>
 
         <Navbar.Toggle

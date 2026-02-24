@@ -50,14 +50,14 @@ const HomePage = () => {
                 className={`${styles.navLink} ${activeComponent === 'Complaint' ? styles.activeNavLink : ''}`}
                 onClick={() => setActiveComponent('Complaint')}
               >
-                <FaPlusCircle size={14} /> <span>New Statement</span>
+                <FaPlusCircle size={14} /> <span>New Complaint</span>
               </Nav.Link>
 
               <Nav.Link 
                 className={`${styles.navLink} ${activeComponent === 'Status' ? styles.activeNavLink : ''}`}
                 onClick={() => setActiveComponent('Status')}
               >
-                <FaSearch size={14} /> <span>Track Records</span>
+                <FaSearch size={14} /> <span>Status</span>
               </Nav.Link>
             </Nav>
 

@@ -11,7 +11,7 @@ const AppFooter = () => {
             {/* 1. Brand Section */}
             <Col xs={12} md={4} className="text-center text-md-start">
               <div className="footer-brand mb-1">
-                Complaint<span className="text-primary">Care</span>
+                Complaint<span className="text-primary">Registery</span>
               </div>
               <p className="text-muted smaller mb-0">
                 Turning complaints into customer trust.
@@ -30,7 +30,7 @@ const AppFooter = () => {
             {/* 3. Copyright (End) */}
             <Col xs={12} md={4} className="text-center text-md-end">
               <span className="text-muted smaller">
-                © {new Date().getFullYear()} ComplaintCare Inc. All rights reserved.
+                © {new Date().getFullYear()} ComplaintRegistery Inc. All rights reserved.
               </span>
             </Col>
 

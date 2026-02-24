@@ -11,7 +11,7 @@ export default function AuthFooter() {
             {/* 1. Brand & Tagline */}
             <Col xs={12} md={4} className="text-center text-md-start">
               <div className="brand-text">
-                Complaint<span className="text-primary">Care</span>
+                Complaint<span className="text-primary">Registery</span>
               </div>
               <p className="text-secondary smaller mb-0">
                 Building trust through accountability.
